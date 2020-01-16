@@ -7,7 +7,7 @@ Yuanzhi Ke, Masafumi Hagiwara: “A Non-image-based Subcharacter-level Method to
 
 We provide the preprocessed data of our experiments introduced in the paper as demo data.
 
-You can download it at 
+You can download it at https://drive.google.com/file/d/1uMRapEB9_wOnr_bNzf64AT_xn7GY-sBR/view?usp=sharing
 
 The example data is a subset of tokenized Rakuten Ichiba Data provided by Rakuten.Inc. (https://rit.rakuten.co.jp/data_release/)
 
@@ -26,3 +26,8 @@ We are sorry but the vocab and raw text is NOT provided due to the license of th
 ## Usage
 
 Please check experimentExample.ipynb
+
+## TODO
+
+- Preprocessing Script 
+- Cleaner Codes
