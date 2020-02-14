@@ -39,8 +39,8 @@ def build_word_feature_shape(vocab_size=5, char_emb_dim=15, comp_width=3, max_wo
     # print(init_weight)
     # first layer embeds
     #  every components
+    num_inputs = 3
     if position:
-        num_inputs = 3
         word_input = Input(shape=(num_inputs, comp_width * max_word_length))
         shape = Lambda(lambda x: x[:, 0, :])(word_input)  # use lambda to slice. not using lambda lead to errors
         idc = Lambda(lambda x: x[:, 1, :])(word_input)
@@ -60,9 +60,11 @@ def build_word_feature_shape(vocab_size=5, char_emb_dim=15, comp_width=3, max_wo
         print('Add token embeddings and pos embeddings.')
         char_embedding = keras.layers.Add()([shape_embedding, idc_embedding, pos_embedding])
     else:
-        word_input = Input(shape=(comp_width * max_word_length,))
-        char_embedding = \
-            Embedding(input_dim=vocab_size, output_dim=char_emb_dim, weights=[init_weight], trainable=True)(word_input)
+        word_input = Input(shape=(num_inputs, comp_width * max_word_length,))
+        shape = Lambda(lambda x: x[:, 0, :])(word_input)  # use lambda to slice. not using lambda lead to errors
+        shape_embedding = \
+            Embedding(input_dim=vocab_size, output_dim=char_emb_dim, weights=[init_weight], trainable=True)(shape)
+        char_embedding = shape_embedding
     # print("char_embedding:", char_embedding._keras_shape)
     if cnn_encoder:
         if mode == "padding":
@@ -149,10 +151,7 @@ def build_model(radical_vocab_size=2487, word_vocab_size=10, char_vocab_size=10,
                                                         shape_filter=shape_filter,
                                                         char_filter=char_filter,
                                                         position=position)
-        if position:
-            sentence_input = Input(shape=(max_sentence_length, 3, comp_width * max_word_length), dtype='int32')
-        else:
-            sentence_input = Input(shape=(max_sentence_length, comp_width * max_word_length), dtype='int32')
+        sentence_input = Input(shape=(max_sentence_length, 3, comp_width * max_word_length), dtype='int32')
         word_feature_sequence = TimeDistributed(word_feature_encoder)(sentence_input)
         # print(word_feature_sequence._keras_shape)
     if word:
