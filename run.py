@@ -69,7 +69,7 @@ if __name__ == "__main__":
                             max_sentence_length=MAX_SENTENCE_LENGTH, max_word_length=MAX_WORD_LENGTH,
                             comp_width=COMP_WIDTH, char_emb_dim=CHAR_EMB_DIM, classes=2,
                             char_shape=True, word=False, char=False,
-                            cnn_encoder=False, highway="relu", nohighway="linear",
-                            attention=True, shape_filter=True, char_filter=True, position=False)
+                            cnn_encoder=True, highway="relu", nohighway="linear",
+                            attention=True, shape_filter=True, char_filter=True, position=True)
         train_model(model, X_train, y_train, X_test, y_test, model_name, path="./")
         test_model(model, X_test, y_test)
