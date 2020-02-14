@@ -177,6 +177,8 @@ def build_model(radical_vocab_size=2487, word_vocab_size=10, char_vocab_size=10,
         else:
             lstm_rnn = Bidirectional(LSTM(150, dropout=dropout, return_sequences=False))(word_feature_sequence)
         x = lstm_rnn
+    else:
+        x = Flatten()(word_feature_sequence)
     if classes < 2:
         print("class number cannot less than 2")
         exit(1)
