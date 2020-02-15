@@ -39,9 +39,9 @@ def train_model(model, x_train, y_train, x_val, y_val, model_name, early_stop=Fa
     return result
 
 def max_from_category(y):
-    y_true = numpy.zeros(y.shape[0], dtype=numpy.int)
+    y_true = np.zeros(y.shape[0], dtype=np.int)
     for i, v in enumerate(y):
-        y_true[i] = numpy.argmax(v)
+        y_true[i] = np.argmax(v)
     return y_true
 
 def test_model(model, x_test, y_test):
@@ -66,7 +66,8 @@ if __name__ == "__main__":
                         char_shape=True, word=False, char=False,
                         cnn_encoder=False, highway="relu", nohighway="linear",
                         attention=True, shape_filter=True, char_filter=True, position=True)
-    train_model(model, x_sip_train, y_train, x_sip_validation, y_validation, model_name, path="./")
+    # train_model(model, x_sip_train, y_train, x_sip_validation, y_validation, model_name, path="./")
+    model.load_weights("checkpoints/" + model_name + "_loss.hdf5")
     test_model(model, x_sip_test_normal, y_test_normal)
     test_model(model, x_sip_test_unk_w, y_test_unk_w)
     test_model(model, x_sip_test_unk_c, y_test_unk_c)

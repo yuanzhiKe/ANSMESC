@@ -40,9 +40,9 @@ def train_model(model, x_train, y_train, x_val, y_val, model_name, early_stop=Fa
     return result
 
 def max_from_category(y):
-    y_true = numpy.zeros(y.shape[0], dtype=numpy.int)
+    y_true = np.zeros(y.shape[0], dtype=np.int)
     for i, v in enumerate(y):
-        y_true[i] = numpy.argmax(v)
+        y_true[i] = np.argmax(v)
     return y_true
 
 def test_model(model, x_test, y_test):
@@ -76,7 +76,8 @@ if __name__ == "__main__":
     K.clear_session()
     # using the vocab size of the example data
     model = build_model(radical_vocab_size=real_vocab_number, char_vocab_size=char_vocab_size, word_vocab_size = word_vocab_size, max_sentence_length=MAX_SENTENCE_LENGTH, max_word_length=MAX_WORD_LENGTH, classes=2, word_dim=WORD_DIM, comp_width=COMP_WIDTH)
-    train_model(model, [X, Xw, Xc], y_train, [x_sip_validation, x_w_validation, x_c_validation], y_validation, model_name, path="./")
+    # train_model(model, [X, Xw, Xc], y_train, [x_sip_validation, x_w_validation, x_c_validation], y_validation, model_name, path="./")
+    model.load_weights("checkpoints/" + model_name + "_loss.hdf5")
     test_model(model, [x_sip_test_normal, x_w_test_normal, x_c_test_normal], y_test_normal)
     test_model(model, [x_sip_test_unk_w, x_w_test_unk_w, x_c_test_unk_w], y_test_unk_w)
     test_model(model, [x_sip_test_unk_c, x_w_test_unk_c, x_c_test_unk_c], y_test_unk_c)
