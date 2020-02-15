@@ -39,9 +39,9 @@ def train_model(model, x_train, y_train, x_val, y_val, model_name, early_stop=Fa
     return result
 
 def max_from_category(y):
-    y_true = numpy.zeros(y.shape[0], dtype=numpy.int)
+    y_true = np.zeros(y.shape[0], dtype=np.int)
     for i, v in enumerate(y):
-        y_true[i] = numpy.argmax(v)
+        y_true[i] = np.argmax(v)
     return y_true
 
 def test_model(model, x_test, y_test):
