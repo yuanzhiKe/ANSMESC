@@ -152,33 +152,35 @@ def build_model(radical_vocab_size=2487, word_vocab_size=10, char_vocab_size=10,
                                                         char_filter=char_filter,
                                                         position=position)
         sentence_input = Input(shape=(max_sentence_length, 3, comp_width * max_word_length), dtype='int32')
-        word_feature_sequence = TimeDistributed(word_feature_encoder)(sentence_input)
-        # print(word_feature_sequence._keras_shape)
+        feature_sequence = TimeDistributed(word_feature_encoder)(sentence_input)
+        # print(feature_sequence._keras_shape)
     if word:
         sentence_word_input = Input(shape=(max_sentence_length,), dtype='int32')
         word_embedding_sequence = Embedding(input_dim=word_vocab_size, output_dim=WORD_DIM)(sentence_word_input)
     if char:
         word_feature_encoder = build_word_feature_char(vocab_size=char_vocab_size,cnn_encoder=cnn_encoder, highway=highway)
         char_input = Input(shape=(max_sentence_length, max_word_length), dtype='int32')
-        word_feature_sequence = TimeDistributed(word_feature_encoder)(char_input)
+        char_feature_sequence = TimeDistributed(word_feature_encoder)(char_input)
     if char_shape and word and not char:
-        word_feature_sequence = Concatenate(axis=2)([word_feature_sequence, word_embedding_sequence])
-    if word and not char_shape and not char:
-        word_feature_sequence = word_embedding_sequence
-    # print(word_feature_sequence._keras_shape)
+        feature_sequence = Concatenate(axis=2)([feature_sequence, word_embedding_sequence])
+    elif word and not char_shape and not char:
+        feature_sequence = word_embedding_sequence
+    elif char_shape and word and char:
+        feature_sequence = Concatenate(axis=2)([feature_sequence, word_embedding_sequence, char_feature_sequence])
+    # print(feature_sequence._keras_shape)
     if model == "rnn":
         if attention:
-            lstm_rnn = Bidirectional(LSTM(150, dropout=dropout, return_sequences=True))(word_feature_sequence)
+            lstm_rnn = Bidirectional(LSTM(150, dropout=dropout, return_sequences=True))(feature_sequence)
             if highway:
                 lstm_rnn = TimeDistributed(Highway(activation=highway))(lstm_rnn)
             elif nohighway:
                 lstm_rnn = TimeDistributed(Dense(units=300, activation=nohighway))(lstm_rnn)
             lstm_rnn = AttentionWithContext()(lstm_rnn)
         else:
-            lstm_rnn = Bidirectional(LSTM(150, dropout=dropout, return_sequences=False))(word_feature_sequence)
+            lstm_rnn = Bidirectional(LSTM(150, dropout=dropout, return_sequences=False))(feature_sequence)
         x = lstm_rnn
     else:
-        x = Flatten()(word_feature_sequence)
+        x = Flatten()(feature_sequence)
     if classes < 2:
         print("class number cannot less than 2")
         exit(1)
@@ -186,11 +188,13 @@ def build_model(radical_vocab_size=2487, word_vocab_size=10, char_vocab_size=10,
         preds = Dense(classes, activation='softmax')(x)
     if char_shape and not word and not char:
         sentence_model = Model(sentence_input, preds)
-    if word and not char_shape and not char:
+    elif word and not char_shape and not char:
         sentence_model = Model(sentence_word_input, preds)
-    if word and char_shape and not char:
+    elif word and char_shape and not char:
         sentence_model = Model([sentence_input, sentence_word_input], preds)
-    if char and not word and not char_shape:
+    elif char and not word and not char_shape:
         sentence_model = Model(char_input, preds)
+    elif char_shape and word and char:
+        sentence_model = Model([sentence_input, sentence_word_input, char_input], preds)
     sentence_model.summary()
     return sentence_model
