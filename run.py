@@ -15,8 +15,8 @@ CHAR_EMB_DIM = 15
 BATCH_SIZE = 64
 VERBOSE = 1
 EPOCHS = 40
-POS = False
-CNN_ENCODER = False
+POS = True
+CNN_ENCODER = True
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 def train_model(model, x_train, y_train, x_val, y_val, model_name, early_stop=False, path="", epochs=EPOCHS, batch_size=BATCH_SIZE, verbose=VERBOSE):
@@ -58,16 +58,16 @@ if __name__ == "__main__":
     kf = KFold(n_splits=5)
     X = x_sip_train
     y = y_train
-    model_name = f"Radical-RNN_HARC_RIDGE_BN_RMSPROP0"
+    model_name = f"Radical-CNN_RNN_HARC_RIDGE_BN_RMSPROP0"
     K.clear_session()
     model = build_model(radical_vocab_size=2487, char_vocab_size=21294,
                         max_sentence_length=MAX_SENTENCE_LENGTH, max_word_length=MAX_WORD_LENGTH,
                         comp_width=COMP_WIDTH, char_emb_dim=CHAR_EMB_DIM, classes=2,
                         char_shape=True, word=False, char=False,
-                        cnn_encoder=False, highway="relu", nohighway="linear",
+                        cnn_encoder=True, highway="relu", nohighway="linear",
                         attention=True, shape_filter=True, char_filter=True, position=True)
-    # train_model(model, x_sip_train, y_train, x_sip_validation, y_validation, model_name, path="./")
-    model.load_weights("checkpoints/" + model_name + "_loss.hdf5")
+    train_model(model, x_sip_train, y_train, x_sip_validation, y_validation, model_name, path="./")
+    # model.load_weights("checkpoints/" + model_name + "_loss.hdf5")
     test_model(model, x_sip_test_normal, y_test_normal)
     test_model(model, x_sip_test_unk_w, y_test_unk_w)
     test_model(model, x_sip_test_unk_c, y_test_unk_c)

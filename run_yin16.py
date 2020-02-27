@@ -75,7 +75,7 @@ if __name__ == "__main__":
     model_name = f"Radical-ONLY-RMSPROP0"
     K.clear_session()
     # using the vocab size of the example data
-    model = build_model(radical_vocab_size=real_vocab_number, char_vocab_size=char_vocab_size, word_vocab_size = word_vocab_size, max_sentence_length=MAX_SENTENCE_LENGTH, max_word_length=MAX_WORD_LENGTH, classes=2, word_dim=WORD_DIM, comp_width=COMP_WIDTH, char=False, word=False)
+    model = build_model(radical_vocab_size=real_vocab_number, char_vocab_size=char_vocab_size, word_vocab_size = word_vocab_size, max_sentence_length=MAX_SENTENCE_LENGTH, max_word_length=MAX_WORD_LENGTH, classes=2, word_dim=WORD_DIM, comp_width=COMP_WIDTH, char=True, word=True)
     train_model(model, X, y_train, x_sip_validation, y_validation, model_name, path="./")
     # model.load_weights("checkpoints/" + model_name + "_loss.hdf5")
     test_model(model, x_sip_test_normal, y_test_normal)
